@@ -1,32 +1,38 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import { setPosts } from "../../state";
 import PostWidget from "./PostWidget";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
+  const posts = useSelector((state) => state.posts);
 
   const getPosts = async () => {
-    const response = await fetch("http://localhost:3001/posts", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    try {
+      const response = await axios.get('http://localhost:3001/posts', {
+        withCredentials: true,
+      });
+    
+      const data = response.data;
+      dispatch(setPosts({ posts: data }));
+    } catch (error) {
+      console.error('Error during GET request:', error);
+    }
   };
 
   const getUserPosts = async () => {
-    const response = await fetch(
-      `http://localhost:3001/posts/${userId}/posts`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    try {
+      const response = await axios.get(`http://localhost:3001/posts/${userId}/posts`, {
+        withCredentials: true,
+      });
+    
+      const data = response.data;
+      dispatch(setPosts({ posts: data }));
+    } catch (error) {
+      console.error('Error during GET request:', error);
+    }
   };
 
   useEffect(() => {
@@ -36,7 +42,6 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       getPosts();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <>
       {posts.map(

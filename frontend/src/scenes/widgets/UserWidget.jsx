@@ -1,6 +1,5 @@
 import {
   ManageAccountsOutlined,
-  EditOutlined,
   LocationOnOutlined,
   WorkOutlineOutlined,
 } from "@mui/icons-material";
@@ -11,6 +10,7 @@ import WidgetWrapper from "../../components/WidgetWrapper";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const UserWidget = ({ userId, picture }) => {
   const [user, setUser] = useState(null);
@@ -22,12 +22,17 @@ const UserWidget = ({ userId, picture }) => {
   const main = palette.neutral.main;
 
   const getUser = async () => {
-    const response = await fetch(`http://localhost:3001/users/${userId}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    setUser(data);
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/users/${userId}`,
+        { withCredentials: true }
+      );
+
+      const data = response.data;
+      setUser(data);
+    } catch (error) {
+      console.error("Error during GET request:", error);
+    }
   };
 
   useEffect(() => {

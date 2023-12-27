@@ -2,10 +2,6 @@ import {
   EditOutlined,
   DeleteOutlined,
   AttachFileOutlined,
-  GifBoxOutlined,
-  ImageOutlined,
-  MicOutlined,
-  MoreHorizOutlined,
 } from "@mui/icons-material";
 import {
   Box,
@@ -18,6 +14,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import Dropzone from "react-dropzone";
+import axios from "axios";
 import FlexBetween from "../../components/FlexBetween";
 import UserImage from "../../components/UserImage";
 import WidgetWrapper from "../../components/WidgetWrapper";
@@ -43,17 +40,23 @@ const MyPostWidget = ({ picture }) => {
     formData.append("description", post);
 
     if (image) {
-      formData.append("picture", image);
-      formData.append("picturePath", image.name);
+    formData.append("picture", image);
+    formData.append("picturePath", image.name);
     }
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/posts",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
 
-    const response = await fetch(`http://localhost:3001/posts`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-    const posts = await response.json();
-    dispatch(setPosts({ posts }));
+      const posts = response.data;
+      dispatch(setPosts({ posts }));
+    } catch (error) {
+      console.error("Error during POST request:", error);
+    }
     setImage(null);
     setPost("");
   };
@@ -82,7 +85,7 @@ const MyPostWidget = ({ picture }) => {
           p="1rem"
         >
           <Dropzone
-            acceptedFiles=".jpg,.jpeg,.png"
+            acceptedFiles="*"
             multiple={false}
             onDrop={(acceptedFiles) => setImage(acceptedFiles[0])}
           >
@@ -97,7 +100,7 @@ const MyPostWidget = ({ picture }) => {
                 >
                   <input {...getInputProps()} />
                   {!image ? (
-                    <p>Add Image Here</p>
+                    <p>Add Attachment Here</p>
                   ) : (
                     <FlexBetween>
                       <Typography>{image.name}</Typography>
@@ -122,37 +125,14 @@ const MyPostWidget = ({ picture }) => {
       <Divider sx={{ margin: "1.25rem 0" }} />
       <FlexBetween>
         <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
-          <ImageOutlined sx={{ color: mediumMain }} />
+          <AttachFileOutlined sx={{ color: mediumMain }} />
           <Typography
             color={mediumMain}
             sx={{ "&:hover": { cursor: "pointer", color: medium } }}
           >
-            Image
+            Attachment
           </Typography>
         </FlexBetween>
-
-        {isNonMobileScreens ? (
-          <>
-            <FlexBetween gap="0.25rem">
-              <GifBoxOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Clip</Typography>
-            </FlexBetween>
-
-            <FlexBetween gap="0.25rem">
-              <AttachFileOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Attachment</Typography>
-            </FlexBetween>
-
-            <FlexBetween gap="0.25rem">
-              <MicOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Audio</Typography>
-            </FlexBetween>
-          </>
-        ) : (
-          <FlexBetween gap="0.25rem">
-            <MoreHorizOutlined sx={{ color: mediumMain }} />
-          </FlexBetween>
-        )}
 
         <Button
           disabled={!post}

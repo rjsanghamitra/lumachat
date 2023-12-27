@@ -2,6 +2,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 import Friend from "../../components/Friend";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import { useEffect } from "react";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setFriends } from "../../state";
 
@@ -12,20 +13,20 @@ const FriendsListWidget = ({ userId }) => {
   const friends = useSelector((state) => state.user.friends);
 
   const getFriends = async () => {
-    const response = await fetch(
-      `http://localhost:3001/users/${userId}/friends`,
-      {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+    try {
+      const response = await axios.get(`http://localhost:3001/users/${userId}/friends`, {
+        withCredentials: true,
+      });
+    
+      const data = response.data;
+      dispatch(setFriends({ friends: data }));
+    } catch (error) {
+      console.error('Error during GET request:', error);
+    }    
   };
   useEffect(() => {
     getFriends();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <WidgetWrapper>
       <Typography

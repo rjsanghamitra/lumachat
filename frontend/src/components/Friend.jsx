@@ -2,6 +2,7 @@ import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import state, { setFriends } from "../state/index.js";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage.jsx";
@@ -18,21 +19,25 @@ const Friend = ({ friendId, name, subtitle, userPicture }) => {
   const primaryDark = palette.primary.dark;
   const main = palette.neutral.main;
 
-  // const isFriend = friends.find((friend) => friend._id === friendId);
-  const isFriend = false;
+  const isFriend = friends.find((friend) => friend._id === friendId);
   const patchFriend = async () => {
-    const response = await fetch(
-      `http://localhost:3001/users/${_id}/${friendId}`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+    try {
+      const response = await axios.patch(
+        `http://localhost:3001/users/${_id}/${friendId}`,
+        null,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      }
-    );
-    const data = await response.json();
-    dispatch(setFriends({ friends: data }));
+        { withCredentials: true }
+      );
+
+      const data = response.data;
+      dispatch(setFriends({ friends: data }));
+    } catch (error) {
+      console.error("Error during PATCH request:", error);
+    }
   };
 
   return (

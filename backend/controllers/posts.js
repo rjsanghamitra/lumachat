@@ -1,12 +1,13 @@
-import Post from "../models/Post.js";
-import User from "../models/User.js";
+const GoogleUser = require("../models/GoogleUser.js");
+const Post = require("../models/Post.js");
+const User = require("../models/User.js");
 
 // create
-export const createPost = async (req, res) => {
+const createPost = async (req, res) => {
   try {
     const { userId, description } = req.body;
     const picture = req.file.buffer;
-    const user = await User.findById(userId);
+    const user = await User.findById(userId) ?? await GoogleUser.findById(userId);
     const newPost = new Post({
       userId,
       firstName: user.firstName,
@@ -28,7 +29,7 @@ export const createPost = async (req, res) => {
 };
 
 // read
-export const getFeedPosts = async (req, res) => {
+const getFeedPosts = async (req, res) => {
   try {
     const post = await Post.find();
     res.status(200).json(post);
@@ -37,7 +38,7 @@ export const getFeedPosts = async (req, res) => {
   }
 };
 
-export const getUserPosts = async (req, res) => {
+const getUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
     const post = await Post.find({ userId });
@@ -48,7 +49,7 @@ export const getUserPosts = async (req, res) => {
 };
 
 // update
-export const likePost = async (req, res) => {
+const likePost = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.body;
@@ -72,3 +73,5 @@ export const likePost = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+module.exports = { createPost, getFeedPosts, getUserPosts, likePost };

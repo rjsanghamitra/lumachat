@@ -1,18 +1,18 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   getUser,
   getUserFriends,
   addOrRemoveFriend,
-} from "../controllers/users.js";
-import { verification } from "../middleware/authorization.js";
+} = require("../controllers/users.js");
+const verification = require("../middleware/authorization.js");
+const dotenv = require("dotenv");
 
 const router = express.Router();
 
-/* READ */
-router.get("/:id", verification, getUser);
-router.get("/:id/friends", verification, getUserFriends);
+/* read */
+router.get("/:id", verification, getUser);          
+router.get("/:id/friends", verification, getUserFriends);     
 
-/* UPDATE */
-router.patch("/:id/:friendId", verification, addOrRemoveFriend);
-
-export default router;
+/* update */
+router.patch("/:id/:friendId", verification, addOrRemoveFriend);    
+module.exports = router;

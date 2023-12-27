@@ -1,8 +1,21 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"; // this will give the user a web token that can be used by the user for authorization.
-import User from "../models/User.js";
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken"); // this will give the user a web token that can be used by the user for authorization.
+const User = require("../models/User.js");
+const dotenv = require("dotenv").config();
 
-export const register = async (req, res) => {
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = async (id) => {
+  return jwt.sign(
+    { id },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    },
+    { algorithm: "HS256" }
+  );
+};
+
+const register = async (req, res) => {
   try {
     const {
       firstName,
@@ -15,6 +28,9 @@ export const register = async (req, res) => {
     } = req.body;
 
     const picture = req.file.buffer;
+
+    console.log(req.file);
+    console.log(req.body);
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
@@ -30,13 +46,15 @@ export const register = async (req, res) => {
       occupation,
     });
     const savedUser = await newUser.save();
+    const token = await createToken(savedUser._id);
+    res.cookie("token", token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(201).json(savedUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export const login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
@@ -45,10 +63,17 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid Credentials." });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = await createToken(user._id);
+    console.log("after login: ", token);
     delete user.password;
-    res.status(200).json({ token, user });
+    res
+      .cookie("token", token, { httpOnly: true, sameSite: "strict" })
+      .header("Authorization")
+      .status(200)
+      .json({ token, user });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
+
+module.exports = { register, login };

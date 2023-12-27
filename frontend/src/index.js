@@ -5,6 +5,7 @@ import App from "./App";
 import authReducer from "./state/index.js";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
+import { CookiesProvider } from "react-cookie";
 import {
   persistStore,
   persistReducer,
@@ -35,7 +36,9 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistStore(store)}>
-        <App />
+        <CookiesProvider>
+          <App />
+        </CookiesProvider>
       </PersistGate>
     </Provider>
   </React.StrictMode>

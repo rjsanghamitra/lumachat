@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
     {
@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema(
         },
         location: String,
         occupation: String,
-    }, { timestamps: true });
+    }, { timestamps: true });       // automatically adds created at and updated at timestamps
 
 const User = mongoose.model("User", UserSchema);
-export default User;
+module.exports = User;

@@ -7,6 +7,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import axios from "axios";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -15,6 +16,17 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "../../state/index.js";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween.jsx";
+import "./Divider.css";
+
+function Line() {
+  return (
+    <div className="divider-container">
+      <div className="divider"></div>
+      <div className="divider-text">OR</div>
+      <div className="divider"></div>
+    </div>
+  );
+}
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -61,7 +73,7 @@ const Form = () => {
     for (let value in values) {
       formData.append(value, values[value]);
     }
-    formData.append("picture", values.picture.name);
+    formData.append("picturePath", values.picture.name);
 
     const savedUserResponse = await fetch(
       "http://localhost:3001/auth/register",
@@ -75,6 +87,28 @@ const Form = () => {
 
     if (savedUser) {
       setPageType("login");
+    }
+  };
+
+  const GoogleAuth = async () => {
+    try {
+      window.open("http://localhost:3001/auth/google/redirect", "_self");
+      const resp = await axios.get("http://localhost:3001/auth/login/success", {
+        withCredentials: true,
+      });
+      const data = resp.data;
+
+      console.log(data);
+      if (data) {
+        dispatch(
+          setLogin({
+            user: data.user,
+            token: data.user.id,
+          })
+        );
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -93,7 +127,7 @@ const Form = () => {
           token: loggedIn.token,
         })
       );
-      navigate("/home");
+      navigate("/");
     }
   };
 
@@ -266,6 +300,44 @@ const Form = () => {
                 : "Already have an account? Login here."}
             </Typography>
           </Box>
+          {isLogin && (
+            <Box>
+              <Line />
+              <Button
+                fullWidth
+                type="submit"
+                onClick={GoogleAuth}
+                sx={{
+                  m: "2rem 0",
+                  p: "1rem",
+                  backgroundColor: palette.primary.main,
+                  color: palette.background.alt,
+                  "&:hover": { color: palette.primary.main },
+                }}
+              >
+                LOG IN WITH GOOGLE
+              </Button>
+            </Box>
+          )}
+          {!isLogin && (
+            <Box>
+              <Line />
+              <Button
+                fullWidth
+                type="submit"
+                onClick={GoogleAuth}
+                sx={{
+                  m: "2rem 0",
+                  p: "1rem",
+                  backgroundColor: palette.primary.main,
+                  color: palette.background.alt,
+                  "&:hover": { color: palette.primary.main },
+                }}
+              >
+                REGISTER WITH GOOGLE
+              </Button>
+            </Box>
+          )}
         </form>
       )}
     </Formik>

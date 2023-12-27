@@ -70,30 +70,30 @@ export const themeSettings = (mode) => {
       }
     },
     typography: {
-      fontFamily: ["Tektur", "cursive"].join(","),
+      fontFamily: ["Afacad", "sans-serif", "Merriweather", "serif", "Rubik", "sans-serif"].join(","),
       fontSize: 12,
       h1: {
-        fontFamily: ["Tektur", "cursive"].join(","),
+        fontFamily: ["Afacad", "sans-serif", "Merriweather", "serif", "Rubik", "sans-serif"].join(","),
         fontSize: 40,
       },
       h2: {
-        fontFamily: ["Tektur", "cursive"].join(","),
+        fontFamily: ["Afacad", "sans-serif", "Merriweather", "serif", "Rubik", "sans-serif"].join(","),
         fontSize: 32,
       },
       h3: {
-        fontFamily: ["Tektur", "cursive"].join(","),
+        fontFamily: ["Afacad", "sans-serif", "Merriweather", "serif", "Rubik", "sans-serif"].join(","),
         fontSize: 24,
       },
       h4: {
-        fontFamily: ["Tektur", "cursive"].join(","),
+        fontFamily: ["Afacad", "sans-serif", "Merriweather", "serif", "Rubik", "sans-serif"].join(","),
         fontSize: 20,
       },
       h5: {
-        fontFamily: ["Tektur", "cursive"].join(","),
+        fontFamily: ["Afacad", "sans-serif", "Merriweather", "serif", "Rubik", "sans-serif"].join(","),
         fontSize: 16,
       },
       h6: {
-        fontFamily: ["Tektur", "cursive"].join(","),
+        fontFamily: ["Afacad", "sans-serif", "Merriweather", "serif", "Rubik", "sans-serif"].join(","),
         fontSize: 14,
       },
     }
